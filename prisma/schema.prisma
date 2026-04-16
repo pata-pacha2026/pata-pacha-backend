@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id            Int      @id @default(autoincrement())
+  nameZh        String
+  nameEn        String
+  nameEs        String
+  nameFr        String
+  nameDe        String
+  descZh        String
+  descEn        String
+  descEs        String
+  descFr        String
+  descDe        String
+  price         Float
+  originalPrice Float?
+  images        String[] @default([])
+  category      String
+  rating        Float    @default(4.5)
+  stock         Int      @default(100)
+  isHot         Boolean  @default(false)
+  isNew         Boolean  @default(false)
+  isPublished   Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([category])
+  @@index([isHot])
+  @@index([isNew])
+  @@index([isPublished])
+}
+
+model Category {
+  id        Int    @id @default(autoincrement())
+  slug      String @unique
+  nameZh    String
+  nameEn    String
+  nameEs    String
+  nameFr    String
+  nameDe    String
+  icon      String
+  image     String @default("")
+  sortOrder Int    @default(0)
+}
+
+model Promotion {
+  id         Int    @id @default(autoincrement())
+  titleZh    String
+  titleEn    String
+  titleEs    String
+  titleFr    String
+  titleDe    String
+  subtitleZh String
+  subtitleEn String
+  subtitleEs String
+  subtitleFr String
+  subtitleDe String
+  type       String @default("flash")
+  discount   Float  @default(0)
+  image      String @default("")
+  bgColor    String @default("#1C1917")
+  isActive   Boolean @default(true)
+  startDate  DateTime?
+  endDate    DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Order {
+  id           Int      @id @default(autoincrement())
+  email        String
+  fullName     String
+  phone        String
+  address      String
+  city         String
+  state        String
+  zipCode      String
+  country      String
+  items        Json
+  totalAmount  Float
+  status       String   @default("pending")
+  paymentMethod String?
+  paymentId    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+model AdminUser {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteConfig {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model PaymentRecord {
+  id            Int      @id @default(autoincrement())
+  orderId       Int
+  method        String
+  amount        Float
+  status        String   @default("pending")
+  transactionId String?
+  rawResponse   Json?
+  createdAt     DateTime @default(now())
+
+  @@index([orderId])
+  @@index([status])
+}
