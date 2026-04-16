@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: pata-pacha-backend
+    runtime: node
+    region: oregon
+    plan: starter
+    branch: main
+    repo: https://github.com/pata-pacha2026/pata-pacha-backend
+    buildCommand: corepack enable && pnpm install && npx prisma generate && pnpm run build
+    startCommand: npx prisma migrate deploy && node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: API_PREFIX
+        value: /api
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: LOG_LEVEL
+        value: info
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pata-pacha-db
+          property: connectionString
+
+databases:
+  - name: pata-pacha-db
+    region: oregon
+    plan: free
